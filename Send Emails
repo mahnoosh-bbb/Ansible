@@ -1,0 +1,14 @@
+- name: Send email
+  mail:
+    host: smtp.hostinger.com
+    port: 587
+    username: email@itpanther.com
+    password: sdhbvyfbsdj3824
+    from: email@itpanther.com
+    to: ksfh@mailinator.com
+    subject: "{{ ansible_play_name }} has completed."
+    body: " Here are the results: {{ install_apache }}"
+    secure: starttls
+
+
+https://www.youtube.com/watch?v=mw6WwjjX9MY
