@@ -1,0 +1,62 @@
+- name: Install MySQL, create database, and dump database
+  become: true
+  hosts: localhost
+  connection: localhost
+  gather_facts: yes
+
+  tasks:
+    - name: Installing Mysql and dependencies
+      package:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - mysql-server
+        - mysql-client
+        - python3-mysqldb
+        - libmysqlclient-dev
+      become: yes
+
+    - name: start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create user
+      mysql_user:
+        name: "mahnoosh"
+        login_host: localhost
+        login_user: "root"
+        login_password: "1qaz!QAZ"
+        host: localhost
+        priv: "*.*:ALL,GRANT"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+
+    - name: create new databases with names 'foo' and 'bar'
+      community.mysql.mysql_db:
+        name:
+          - foo
+          - bar
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+
+    - name: Dump multiple database
+      community.mysql.mysql_db:
+        state: dump
+        name: foo
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        target: /tmp/foo.sql
+      register: dump_result
+
+    - name: Sending an e-mail using Gmail SMTP servers
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 587
+        username: mahnoosh.bahrami91@gmail.com
+        password: "S@m!@#1010"
+        to: Mahnoosh Bahrami <mahnoosh.bahrami@chargoon.com>
+        subject: Ansible-report
+        body: System {{ ansible_hostname }} has been successfully provisioned.
+      delegate_to: localhost
