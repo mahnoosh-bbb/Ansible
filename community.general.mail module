@@ -1,0 +1,74 @@
+# Send an email
+
+- name: Example playbook sending mail to root
+  community.general.mail:
+    subject: System {{ ansible_hostname }} has been successfully provisioned.
+  delegate_to: localhost
+
+- name: Sending an e-mail using Gmail SMTP servers
+  community.general.mail:
+    host: smtp.gmail.com
+    port: 587
+    username: username@gmail.com
+    password: mysecret
+    to: John Smith <john.smith@example.com>
+    subject: Ansible-report
+    body: System {{ ansible_hostname }} has been successfully provisioned.
+  delegate_to: localhost
+
+- name: Send e-mail to a bunch of users, attaching files
+  community.general.mail:
+    host: 127.0.0.1
+    port: 2025
+    subject: Ansible-report
+    body: Hello, this is an e-mail. I hope you like it ;-)
+    from: jane@example.net (Jane Jolie)
+    to:
+    - John Doe <j.d@example.org>
+    - Suzie Something <sue@example.com>
+    cc: Charlie Root <root@localhost>
+    attach:
+    - /etc/group
+    - /tmp/avatar2.png
+    headers:
+    - Reply-To=john@example.com
+    - X-Special="Something or other"
+    charset: us-ascii
+  delegate_to: localhost
+
+- name: Sending an e-mail using the remote machine, not the Ansible controller node
+  community.general.mail:
+    host: localhost
+    port: 25
+    to: John Smith <john.smith@example.com>
+    subject: Ansible-report
+    body: System {{ ansible_hostname }} has been successfully provisioned.
+
+- name: Sending an e-mail using Legacy SSL to the remote machine
+  community.general.mail:
+    host: localhost
+    port: 25
+    to: John Smith <john.smith@example.com>
+    subject: Ansible-report
+    body: System {{ ansible_hostname }} has been successfully provisioned.
+    secure: always
+
+- name: Sending an e-mail using StartTLS to the remote machine
+  community.general.mail:
+    host: localhost
+    port: 25
+    to: John Smith <john.smith@example.com>
+    subject: Ansible-report
+    body: System {{ ansible_hostname }} has been successfully provisioned.
+    secure: starttls
+
+- name: Sending an e-mail using StartTLS, remote server, custom EHLO, and timeout of 10 seconds
+  community.general.mail:
+    host: some.smtp.host.tld
+    port: 25
+    timeout: 10
+    ehlohost: my-resolvable-hostname.tld
+    to: John Smith <john.smith@example.com>
+    subject: Ansible-report
+    body: System {{ ansible_hostname }} has been successfully provisioned.
+    secure: starttls
