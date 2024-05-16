@@ -3,7 +3,7 @@
     host: smtp.hostinger.com
     port: 587
     username: email@itpanther.com
-    password: sdhbvyfbsdj3824
+    password: 'sdhbvyfbsdj3824'
     from: email@itpanther.com
     to: ksfh@mailinator.com
     subject: "{{ ansible_play_name }} has completed."
