@@ -1,38 +1,21 @@
----
-- hosts: Server-VPS
-  gather_facts: true
-  vars_files:
-    - database_vault.yaml
+# This playbook backups all mysql databases into separate files.
+
+- name: backup mysql
+  vars:
+    - exclude_db:
+      - "Database"
+      - "information_schema"
+      - "performance_schema"
+      - "mysql"
   tasks:
-    - name: Create variables
-      set_fact:
-        db_file_name: "{{ db_name }}_{{ ansible_date_time.date | replace('-','') }}.sql"
-    
-    - name: Confirm hostname
-      debug:
-        msg: Logged into the server.
-
-    - name: Download Database to server
-      shell: |
-        mysqldump -u {{ db_user_name}} -p"{{ db_user_password }}" {{ db_name }} --quick --lock-tables=false > "{{ db_file_name }}" --no-tablespaces
-      no_log: true
-
-    - name: Wait until the database backup completed on server
-      wait_for:
-        path: "{{ db_file_name }}"
-        state: present
-        msg: "Timeout to find file {{ db_file_name }}"
-
-    - name: Downloading backup to local computer
-      ansible.builtin.fetch:
-        src: "{{ db_file_name }}"
-        dest: "{{ db_file_name }}"
-        flat: yes
-
-    - name: Download completed
-      debug:
-        msg: Database have been downloaded successfully.
-
-
-
-https://github.com/daljitdokal/ansible-mysql-backup
+    - name: get db names
+      shell: 'mysql -u root -p{{ vault_root_passwd }} -e "show databases;" '
+      register: dblist
+    - name: backup databases
+      mysql_db:
+        state: dump
+        name: "{{ item }}"
+        target: "/tmp/{{ item }}.sql"
+        login_user: root
+        login_password: "{{ vault_root_passwd }}"
+      with_items: "{{ dblist.stdout_lines | difference(exclude_db) }}"
