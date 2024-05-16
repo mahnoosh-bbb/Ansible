@@ -10,3 +10,14 @@
         body: "Hi!!! This side Prateek. I am sending you mail by using ansible-playbook."
         username: "your@gmail.com"
         password: "your-generated-app-password"
+
+
+
+
+1.    Go to your Google Account settings.
+2.    Navigate to the “Security” section.
+3.    Under “Signing in to Google,” enable “2-Step Verification” if not already enabled.
+4.    In the same “Security” section, find the “App passwords” option.
+5.    Click on “App passwords” and select the app “Mail” and the device “Other (Custom name)”.
+6.    Click “Generate” to create an App Password.
+7.    Copy the generated App Password. This will be used in your Ansible playbook.
